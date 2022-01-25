@@ -32,13 +32,14 @@
                 android:textAlignment="textEnd"
                 android:textSize="24sp"
                 tools:ignore="RtlCompat" />
+
             <TextView
                 android:id="@+id/txtDisplay"
                 android:layout_width="match_parent"
-                android:layout_height="179dp"
-                android:text="0"
-                android:paddingHorizontal="5dp"
+                android:layout_height="94dp"
                 android:gravity="bottom"
+                android:paddingHorizontal="5dp"
+                android:text="0"
                 android:textAlignment="textEnd"
                 android:textSize="48sp"
                 tools:ignore="RtlCompat" />
@@ -103,7 +104,7 @@
             app:layout_row="1" />
 
         <Button
-            android:id="@+id/btnDivider"
+            android:id="@+id/btnDivide"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:insetTop="1dp"

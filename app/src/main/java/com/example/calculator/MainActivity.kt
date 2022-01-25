@@ -4,6 +4,7 @@ import android.icu.text.DecimalFormat
 import android.icu.text.DecimalFormatSymbols
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.TypedValue
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
 
@@ -18,19 +19,17 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         var btnNumber = listOf(btnZero, btnOne, btnTwo, btnThree, btnFour, btnFive, btnSix, btnSeven, btnEight, btnNine)
-        var btnSign = listOf(btnPlus, btnMinus, btnMultiply, btnDivider, btnMod)
+        var btnSign = listOf(btnPlus, btnMinus, btnMultiply, btnDivide, btnMod)
 
-        val format = DecimalFormat("0.#######");
         for (button in btnNumber) {
             button.setOnClickListener {
                 if (sign == Sign.Empty) {
                     if (number1.length >= 13) return@setOnClickListener
-                    number1 = format.format("$number1${button.text}".toDouble())
+                    number1 = formatDecimal("${number1}${button.text}")
                     txtDisplay.text = formatNumber(number1)
                 } else {
                     if (number2.length >= 13) return@setOnClickListener
-                    number2 = format.format("$number2${button.text}".toDouble())
-                    println(formatNumber(number2))
+                    number2 = formatDecimal("${number2}${button.text}")
                     txtDisplay.text = formatNumber(number2)
                 }
             }
@@ -46,30 +45,41 @@ class MainActivity : AppCompatActivity() {
         }
         btnDel.setOnClickListener {
             if (sign == Sign.Empty) {
-                number1 = number1.dropLast(1)
+                number1 = formatDecimal(number1.dropLast(1))
                 txtDisplay.text = formatNumber(number1)
             } else {
-                number2 = number2.dropLast(1)
+                number2 = formatDecimal(number2.dropLast(1))
                 txtDisplay.text = formatNumber(number2)
-            }
-            if (txtDisplay.text.isEmpty()) {
-                txtDisplay.text = "0"
             }
         }
         btnClear.setOnClickListener {
             number1 = ""
             number2 = ""
             sign = Sign.Empty
-            txtDisplay.text = ""
+            txtDisplay.text = "0"
             txtDisplay0.text = ""
         }
         for (button in btnSign) {
             button.setOnClickListener {
-                txtDisplay0.text = "${formatNumber(number1)} ${button.text}"
+                var temp = Sign.values().find { it.value == button.text.toString() }!!
+                if (sign != Sign.Empty && sign == temp) {
+                    sign = temp
+                    calculate()
+                } else {
+                    txtDisplay0.text = "${formatNumber(number1)} ${button.text}"
+                    sign = temp
+                    number2 = ""
+                }
             }
+        }
+        btnEqual.setOnClickListener {
+            calculate()
         }
     }
 
+    private fun formatNumber(num: Double): String {
+        return formatNumber(num.toString())
+    }
     private fun formatNumber(num: String): String {
         val locale = Locale("en", "UK")
 
@@ -80,16 +90,40 @@ class MainActivity : AppCompatActivity() {
         val format = DecimalFormat("#,##0.#######", symbols);
         return format.format(num.toDouble())
     }
-
-    private fun display(num: String) {
-        txtDisplay.text = formatNumber(num)
+    private fun formatDecimal(num: String): String {
+        val format = DecimalFormat("0.#######");
+        return format.format(num.ifEmpty { "0" }.toDouble())
+    }
+    private fun calculate() {
+        if (sign != Sign.Empty) {
+            number2 = number2.ifEmpty { number1 }
+            txtDisplay0.text = "${formatNumber(number1)} ${sign.value} ${formatNumber(number2)}"
+            if ((sign == Sign.Divide || sign == Sign.Modulo) && number2 == "0") {
+                txtDisplay.setTextSize(TypedValue.COMPLEX_UNIT_SP, "36".toFloat())
+                txtDisplay.text = "Cannot divide/modulo by zero!!!"
+                return
+            }
+            var temp1 = number1.toDouble()
+            var temp2 = number2.toDouble()
+            var result: Double = when(sign) {
+                Sign.Plus -> temp1 + temp2
+                Sign.Minus -> temp1 - temp2
+                Sign.Multiply -> temp1 * temp2
+                Sign.Divide -> temp1 / temp2
+                Sign.Modulo -> temp1 % temp2
+                else -> 0.0
+            }
+            txtDisplay.setTextSize(TypedValue.COMPLEX_UNIT_SP, if (txtDisplay.text.length >= 15) "36".toFloat() else "48".toFloat())
+            txtDisplay.text = formatNumber(result)
+            number1 = result.toString()
+        }
     }
 
     enum class Sign(val value: String) {
         Plus("+"),
         Minus("-"),
         Multiply("X"),
-        Divider("/"),
+        Divide("/"),
         Modulo("%"),
         Empty("")
     }
