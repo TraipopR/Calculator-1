@@ -1,80 +1,96 @@
 package com.example.calculator
 
+import android.icu.text.DecimalFormat
+import android.icu.text.DecimalFormatSymbols
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_main.*
+import java.util.*
 
 class MainActivity : AppCompatActivity() {
+
+    private var number1 = ""
+    private var number2 = ""
+    private var sign: Sign = Sign.Empty
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        btnPlus.setOnClickListener {
-            calc(Sign.PLUS)
+        var btnNumber = listOf(btnZero, btnOne, btnTwo, btnThree, btnFour, btnFive, btnSix, btnSeven, btnEight, btnNine)
+        var btnSign = listOf(btnPlus, btnMinus, btnMultiply, btnDivider, btnMod)
+
+        val format = DecimalFormat("0.#######");
+        for (button in btnNumber) {
+            button.setOnClickListener {
+                if (sign == Sign.Empty) {
+                    if (number1.length >= 13) return@setOnClickListener
+                    number1 = format.format("$number1${button.text}".toDouble())
+                    txtDisplay.text = formatNumber(number1)
+                } else {
+                    if (number2.length >= 13) return@setOnClickListener
+                    number2 = format.format("$number2${button.text}".toDouble())
+                    println(formatNumber(number2))
+                    txtDisplay.text = formatNumber(number2)
+                }
+            }
         }
-        btnMinus.setOnClickListener {
-            calc(Sign.MINUS)
+        btnDot.setOnClickListener {
+            if (sign == Sign.Empty && !number1.contains(".")) {
+                txtDisplay.text = formatNumber(number1) + "."
+                number1 += "."
+            } else if (!number2.contains(".")) {
+                txtDisplay.text = formatNumber(number2) + "."
+                number2 += "."
+            }
         }
-        btnMultiply.setOnClickListener {
-            calc(Sign.MULTIPLY)
-        }
-        btnDivider.setOnClickListener {
-            calc(Sign.DIVIDER)
-        }
-        btnModulo.setOnClickListener {
-            calc(Sign.MODULO)
+        btnDel.setOnClickListener {
+            if (sign == Sign.Empty) {
+                number1 = number1.dropLast(1)
+                txtDisplay.text = formatNumber(number1)
+            } else {
+                number2 = number2.dropLast(1)
+                txtDisplay.text = formatNumber(number2)
+            }
+            if (txtDisplay.text.isEmpty()) {
+                txtDisplay.text = "0"
+            }
         }
         btnClear.setOnClickListener {
-            inputNum01.text.clear()
-            inputNum02.text.clear()
-            txtResult.text = ""
-            txtSign.text = ""
+            number1 = ""
+            number2 = ""
+            sign = Sign.Empty
+            txtDisplay.text = ""
+            txtDisplay0.text = ""
         }
-
-    }
-
-    private fun check(num1:String, num2: String, sign: Sign): Boolean {
-        var error: String = ""
-        if (num1.isNullOrBlank() || num2.isNullOrBlank()) {
-            error = "Please input Number 01 and Number 02.!!!"
-        } else if (num2.toDouble() == 0.0 && (sign == Sign.DIVIDER || sign == Sign.MODULO)) {
-            error = "Do not Number 02 is 0 or null!!!"
-        }
-        if (!error.isNullOrEmpty())
-            Toast.makeText(this@MainActivity, error, Toast.LENGTH_SHORT).show()
-        return error == ""
-    }
-
-    private fun calc(sign: Sign) {
-        var num1 = inputNum01.text.toString()
-        var num2 = inputNum02.text.toString()
-
-        if (check(num1, num2, sign)) {
-            txtSign.text = sign.sign
-            var n1 = num1.toDouble()
-            var n2 = num2.toDouble()
-
-            val result: Double = when (sign) {
-                Sign.PLUS -> n1 + n2
-                Sign.MINUS -> n1 - n2
-                Sign.MULTIPLY -> n1 * n2
-                Sign.DIVIDER -> n1 / n2
-                Sign.MODULO -> n1 % n2
+        for (button in btnSign) {
+            button.setOnClickListener {
+                txtDisplay0.text = "${formatNumber(number1)} ${button.text}"
             }
-            txtResult.text = result.toString()
-        } else {
-            txtResult.text = ""
-            txtSign.text = ""
         }
     }
 
-    enum class Sign(val sign: String) {
-        PLUS("+"),
-        MINUS("-"),
-        MULTIPLY("*"),
-        DIVIDER("/"),
-        MODULO("%")
+    private fun formatNumber(num: String): String {
+        val locale = Locale("en", "UK")
+
+        val symbols = DecimalFormatSymbols(locale)
+        symbols.decimalSeparator = '.'
+        symbols.groupingSeparator = ','
+
+        val format = DecimalFormat("#,##0.#######", symbols);
+        return format.format(num.toDouble())
     }
 
+    private fun display(num: String) {
+        txtDisplay.text = formatNumber(num)
+    }
+
+    enum class Sign(val value: String) {
+        Plus("+"),
+        Minus("-"),
+        Multiply("X"),
+        Divider("/"),
+        Modulo("%"),
+        Empty("")
+    }
 }
