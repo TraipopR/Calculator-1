@@ -62,18 +62,19 @@ class MainActivity : AppCompatActivity() {
         for (button in btnSign) {
             button.setOnClickListener {
                 var temp = Sign.values().find { it.value == button.text.toString() }!!
-                if (sign != Sign.Empty && sign == temp) {
-                    sign = temp
+                if (sign != Sign.Empty && number2.isNotEmpty()) {
                     calculate()
-                } else {
-                    txtDisplay0.text = "${formatNumber(number1)} ${button.text}"
-                    sign = temp
-                    number2 = ""
                 }
+                sign = temp
+                txtDisplay0.text = "${formatNumber(number1)} ${button.text}"
+                number2 = ""
             }
         }
         btnEqual.setOnClickListener {
+            number2 = number2.ifEmpty { number1 }
+            txtDisplay0.text = "${formatNumber(number1)} ${sign.value} ${formatNumber(number2)} ="
             calculate()
+            sign = Sign.Empty
         }
     }
 
@@ -96,8 +97,6 @@ class MainActivity : AppCompatActivity() {
     }
     private fun calculate() {
         if (sign != Sign.Empty) {
-            number2 = number2.ifEmpty { number1 }
-            txtDisplay0.text = "${formatNumber(number1)} ${sign.value} ${formatNumber(number2)}"
             if ((sign == Sign.Divide || sign == Sign.Modulo) && number2 == "0") {
                 txtDisplay.setTextSize(TypedValue.COMPLEX_UNIT_SP, "36".toFloat())
                 txtDisplay.text = "Cannot divide/modulo by zero!!!"
