@@ -4,6 +4,7 @@ import android.icu.text.DecimalFormat
 import android.icu.text.DecimalFormatSymbols
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.text.method.ScrollingMovementMethod
 import android.util.TypedValue
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
@@ -17,6 +18,8 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        txtDisplay.movementMethod = ScrollingMovementMethod();
+        txtDisplay0.movementMethod = ScrollingMovementMethod();
 
         var btnNumber = listOf(btnZero, btnOne, btnTwo, btnThree, btnFour, btnFive, btnSix, btnSeven, btnEight, btnNine)
         var btnSign = listOf(btnPlus, btnMinus, btnMultiply, btnDivide, btnMod)
@@ -112,8 +115,8 @@ class MainActivity : AppCompatActivity() {
                 Sign.Modulo -> temp1 % temp2
                 else -> 0.0
             }
-            txtDisplay.setTextSize(TypedValue.COMPLEX_UNIT_SP, if (txtDisplay.text.length >= 15) "36".toFloat() else "48".toFloat())
             txtDisplay.text = formatNumber(result)
+            txtDisplay.setTextSize(TypedValue.COMPLEX_UNIT_SP, if (txtDisplay.text.length >= 15) "36".toFloat() else "48".toFloat())
             number1 = result.toString()
         }
     }
