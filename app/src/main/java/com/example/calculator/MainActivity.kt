@@ -77,7 +77,6 @@ class MainActivity : AppCompatActivity() {
             number2 = number2.ifEmpty { number1 }
             txtDisplay0.text = "${formatNumber(number1)} ${sign.value} ${formatNumber(number2)} ="
             calculate()
-            sign = Sign.Empty
         }
     }
 
