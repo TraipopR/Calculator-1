@@ -18,8 +18,8 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        txtDisplay.movementMethod = ScrollingMovementMethod();
-        txtDisplay0.movementMethod = ScrollingMovementMethod();
+        txtDisplay.movementMethod = ScrollingMovementMethod()
+        txtDisplay0.movementMethod = ScrollingMovementMethod()
 
         var btnNumber = listOf(btnZero, btnOne, btnTwo, btnThree, btnFour, btnFive, btnSix, btnSeven, btnEight, btnNine)
         var btnSign = listOf(btnPlus, btnMinus, btnMultiply, btnDivide, btnMod)
