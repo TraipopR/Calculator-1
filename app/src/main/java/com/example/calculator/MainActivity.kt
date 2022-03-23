@@ -65,7 +65,8 @@ class MainActivity : AppCompatActivity() {
         for (button in btnSign) {
             button.setOnClickListener {
                 var temp = Sign.values().find { it.value == button.text.toString() }!!
-                if (sign != Sign.Empty && number2.isNotEmpty()) {
+                if (sign != Sign.Empty) {
+                    number2 = number2.ifEmpty { number1 }
                     calculate()
                 }
                 sign = temp
