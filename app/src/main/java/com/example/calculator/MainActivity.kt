@@ -103,7 +103,7 @@ class MainActivity : AppCompatActivity() {
     }
     private fun calculate() {
         if (sign != Sign.Empty) {
-            if ((sign == Sign.Divide || sign == Sign.Modulo) && number2 == "0") {
+            if ((sign == Sign.Divide || sign == Sign.Modulo) && (number2 == "0" || number2 == "0.0")) {
                 txtDisplay.setTextSize(TypedValue.COMPLEX_UNIT_SP, "36".toFloat())
                 txtDisplay.text = "Cannot divide/modulo by zero!!!"
                 return
