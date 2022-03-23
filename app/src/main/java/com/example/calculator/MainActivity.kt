@@ -41,7 +41,10 @@ class MainActivity : AppCompatActivity() {
             if (sign == Sign.Empty && !number1.contains(".")) {
                 txtDisplay.text = formatNumber(number1) + "."
                 number1 += "."
-            } else if (!number2.contains(".")) {
+                return@setOnClickListener
+            }
+            number2 = number2.ifEmpty { txtDisplay.text.toString() }
+            if (!number2.contains(".")) {
                 txtDisplay.text = formatNumber(number2) + "."
                 number2 += "."
             }
